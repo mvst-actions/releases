@@ -1,7 +1,7 @@
 const core = require("@actions/core");
 const { getOctokit, context } = require("@actions/github");
 
-const github = getOctokit("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");
+const github = getOctokit(process.env.GITHUB_TOKEN);
 const { owner, repo } = context.repo;
 
 const getLatestReleaseTag = async () => {
