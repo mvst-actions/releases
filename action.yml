@@ -1,5 +1,5 @@
 name: 'Crease a release'
 description: 'Creates a release for a tag'
 runs:
-  using: 'node'
+  using: 'node20'
   main: 'index.js'
