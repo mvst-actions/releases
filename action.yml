@@ -1,0 +1,9 @@
+name: 'Set version tag'
+description: 'Sets the version tag for the build'
+runs:
+  using: 'composite'
+  steps:
+    - name: Execute script
+      runs:
+        using: 'node'
+        main: 'index.js'
