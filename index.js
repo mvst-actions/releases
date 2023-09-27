@@ -1,6 +1,8 @@
 const core = require('@actions/core');
 const {getOctokit, context} = require('@actions/github');
 
+console.log(process.env);
+
 const github = getOctokit(process.env.GITHUB_TOKEN)
 const { owner: currentOwner, repo: currentRepo } = context.repo;
 
