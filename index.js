@@ -1,22 +1,62 @@
-const core = require('@actions/core');
-const {getOctokit, context} = require('@actions/github');
+const core = require("@actions/core");
+const { getOctokit, context } = require("@actions/github");
 
-console.log(process.env);
+const github = getOctokit("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");
+const { owner, repo } = context.repo;
 
-const github = getOctokit(process.env.GITHUB_TOKEN)
-const { owner: currentOwner, repo: currentRepo } = context.repo;
+const getLatestReleaseTag = async () => {
+  try {
+    const releases = await github.rest.repos.listReleases({
+      owner,
+      repo,
+    });
 
-const getLatestReleaseTag = () => {
-  const latestRelease = github.rest.repos.getLatestRelease({
-    owner: currentOwner,
-    repo: currentRepo
+    const latestReleaseTag = releases.data?.[0]?.tag_name;
+
+    return latestReleaseTag;
+  } catch {}
+};
+
+const getLatestTag = async () => {
+  const tags = await github.rest.repos.listTags({
+    owner,
+    repo,
   });
-  
-  console.log(latestRelease);
-}
+
+  const latestTag = tags.data[0].name;
+
+  return latestTag;
+};
+
+const getReleaseNotes = async (tag_name, previous_tag_name) => {
+  const generatedNotes = await github.rest.repos.generateReleaseNotes({
+    owner,
+    repo,
+    tag_name,
+    previous_tag_name,
+  });
+
+  return generatedNotes.data;
+};
+
+const createRelease = async () => {
+  const latestReleaseTag = await getLatestReleaseTag();
+  const latestTag = await getLatestTag();
+
+  const releaseNotes = await getReleaseNotes(latestTag, latestReleaseTag);
+
+  await github.rest.repos.createRelease({
+    owner,
+    repo,
+    tag_name: latestTag,
+    name: releaseNotes.name,
+    body: releaseNotes.body,
+    prerelease: true,
+  });
+};
 
 try {
-  const latestReleaseTag = getLatestReleaseTag();
+  createRelease();
 } catch (error) {
   core.setFailed(error.message);
 }
