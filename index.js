@@ -7,7 +7,7 @@ const github = getOctokit(process.env.GITHUB_TOKEN)
 const { owner: currentOwner, repo: currentRepo } = context.repo;
 
 const getLatestReleaseTag = () => {
-  const latestRelease = github.repos.getLatestRelease({
+  const latestRelease = github.rest.repos.getLatestRelease({
     owner: currentOwner,
     repo: currentRepo
   });
